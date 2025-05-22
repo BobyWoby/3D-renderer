@@ -97,6 +97,10 @@ vec2<double> ObjParser::projectPoint(vec3<double> pointPos){
     return projectPoint(pointPos, vec3<double>(0,0,0), vec3<double>(0,0,1));
 }
 
+vec2<double> ObjParser::orthoProject(vec3<double> pointPos){
+    return vec2<double>(pointPos.x, pointPos.y);
+}
+
 
 std::vector<vec2<vec2<double>>> ObjParser::getLines(){
     std::vector<vec2<vec2<double>>> points;

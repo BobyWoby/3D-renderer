@@ -68,11 +68,12 @@ public:
     }    
 
     std::vector<vec3<double>> getVertices();
-    void normalizeVertices(std::vector<vec3<double>> &in, int maxX, int maxY, int maxZ);
+    static void normalizeVertices(std::vector<vec3<double>> &in, int maxX, int maxY, int maxZ);
     std::vector<vec3<int>> getFaces();
     std::vector<vec2<vec2<double>>> getLines();
     static vec2<double> projectPoint(vec3<double> pointPos, vec3<double> camPos, vec3<double> pointOrientation, vec3<double> screenSpacePos);
     static vec2<double> projectPoint(vec3<double> pointPos, vec3<double> camPos, vec3<double> screenSpacePos);
     static vec2<double> projectPoint(vec3<double> pointPos);
+    static vec2<double> orthoProject(vec3<double> pointPos);
 };
 
