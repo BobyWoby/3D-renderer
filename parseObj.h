@@ -26,6 +26,11 @@ public:
                 std::cerr << "Not a valid index" << std::endl;
         }
     }
+    vec2& operator=(const vec2& in){
+        this->x = in.x;
+        this->y = in.y;
+        return *this;
+    }
 };
 template<typename T> class vec3{
 private:
