@@ -2,6 +2,7 @@
 #include "tgaimage.h"
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
@@ -84,6 +85,33 @@ double signedTriangleArea(int ax, int ay, int bx, int by, int cx, int cy) {
   return 0.5 * (cx * (by - ay) + bx * (ay - cy) + ax * (cy - by));
 }
 
+void coloredTriangle(int ax, int ay, int az, int bx, int by, int bz, int cx, int cy, int cz,
+              TGAImage &framebuffer) {
+  int bbminx = std::min(std::min(ax, bx), cx);
+  int bbminy = std::min(std::min(ay, by), cy);
+  int bbmaxx = std::max(std::max(ax, bx), cx);
+  int bbmaxy = std::max(std::max(ay, by), cy);
+  double total_area = signedTriangleArea(ax, ay, bx, by, cx, cy);
+  if (total_area<1) return; // backface culling + discarding triangles that cover less than a pixel
+
+#pragma omp parallel for
+  for (int i = bbminx; i < bbmaxx; i++) {
+    for (int j = bbminy; j < bbmaxy; j++) {
+      double alpha = signedTriangleArea(i, j, bx, by, cx, cy) / total_area;
+      double beta = signedTriangleArea(ax, ay, i, j, cx, cy) / total_area;
+      double gamma = signedTriangleArea(ax, ay, bx, by, i, j) / total_area;
+      if (alpha < 0 || beta < 0 || gamma < 0)
+        continue;
+      if (alpha > 0.2 && beta > 0.2 && gamma > 0.2) continue;
+      uint8_t blue = alpha * az;
+      uint8_t red = beta * bz;
+      uint8_t green = gamma * cz;
+      TGAColor color{{blue, green, red, 1}, 3};
+      framebuffer.set(i, j, color);
+    }
+  }
+}
+
 void triangle(int ax, int ay, int bx, int by, int cx, int cy,
               TGAImage &framebuffer, TGAColor color) {
   int bbminx = std::min(std::min(ax, bx), cx);
@@ -118,10 +146,10 @@ int main(int argc, char **argv) {
 
   TGAImage framebuffer(width, height, TGAImage::RGB);
   TGAImage diablo(640, 640, TGAImage::RGB);
-  triangle(7, 45, 35, 100, 45, 60, framebuffer, red);
-  triangle(120, 35, 90, 5, 45, 110, framebuffer, white);
+  coloredTriangle(7, 45, 255, 35, 100, 255, 45, 60, 255, framebuffer);
+  // triangle(120, 35, 90, 5, 45, 110, framebuffer, white);
   // triangle(115, 83, 80, 90, 85, 120, framebuffer, green);
-  triangle(vec2<double>(115, 83), vec2<double>(80, 90), vec2<double>(85, 120), framebuffer, green);
+  // triangle(vec2<double>(115, 83), vec2<double>(80, 90), vec2<double>(85, 120), framebuffer, green);
 
   framebuffer.write_tga_file("triangle.tga");
   ObjParser parser{};
