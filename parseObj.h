@@ -7,16 +7,25 @@
 #include <cstring>
 #include <fstream>
 #include <iostream>
+#include <cassert>
 
-template<typename T> class vec2{
-private:
+template<int n, typename T> struct vec{
+    T data[n] = {0};
+    
+    T& operator[](const int i)       { assert(i>=0 && i<n); return data[i]; }
+    T  operator[](const int i) const { assert(i>=0 && i<n); return data[i]; }
 
-public:
+};
+template<typename T> struct vec<2, T>{
+
     T x, y;
     
-    vec2(T x, T y): x(x), y(y){}
+    vec<2,T>(T x, T y): x(x), y(y){
+        
+    }
 
     T& operator[](int index){
+        assert(index >=0 && index <=1);
         switch(index){
             case 0:
                 return x;
@@ -24,24 +33,32 @@ public:
                 return y;
             default:
                 std::cerr << "Not a valid index" << std::endl;
+                return x;
         }
     }
-    vec2& operator=(const vec2& in){
+    vec<2,T>& operator=(const vec<2,T>& in){
         this->x = in.x;
         this->y = in.y;
         return *this;
     }
 };
-template<typename T> class vec3{
+
+template<int n, typename T> std::ostream& operator<<(std::ostream& out, const vec<n, T>& v) {
+    for (int i=0; i<n; i++) out << v[i] << " ";
+    return out;
+}
+
+template<> struct vec<3, double>{
 private:
 
 public:
-    T x, y, z;
+    double x, y, z;
     
-    vec3(T x, T y, T z): x(x), y(y), z(z){}
+    vec<3,double>(double x, double y, double z): x(x), y(y), z(z){}
 
-    T& operator[](int index){
+    double& operator[](int index){
         switch(index){
+            assert(index >=0 && index <=2);
             case 0:
                 return x;
             case 1:
@@ -50,30 +67,45 @@ public:
                 return z;
             default:
                 std::cerr << "Not a valid index" << std::endl;
+                return x;
         }
+    }
+
+    double dot(vec<3, double> other){
+        return x * other.x + y * other.y + z * other.z;
     }
 };
 
-class ObjParser {
+
+// Type aliases
+typedef vec<2, double> vec2d;
+typedef vec<3, double> vec3d;
+typedef vec<3, int> vec3i;
+
+
+
+
+
+class Model {
 private:
     std::string filepath;
     std::vector<std::string> split(std::string str, std::string delim);    
 public:
-    ObjParser(){
+    Model(){
        filepath = "/home/bobywoby/dev/c++/tinyrenderer/obj/diablo3_pose/diablo3_pose.obj"; 
     }    
     
-    ObjParser(std::string f){
+    Model(std::string f){
        filepath = f; 
     }    
 
-    std::vector<vec3<double>> getVertices();
-    static void normalizeVertices(std::vector<vec3<double>> &in, int maxX, int maxY, int maxZ);
-    std::vector<vec3<int>> getFaces();
-    std::vector<vec2<vec2<double>>> getLines();
-    static vec2<double> projectPoint(vec3<double> pointPos, vec3<double> camPos, vec3<double> pointOrientation, vec3<double> screenSpacePos);
-    static vec2<double> projectPoint(vec3<double> pointPos, vec3<double> camPos, vec3<double> screenSpacePos);
-    static vec2<double> projectPoint(vec3<double> pointPos);
-    static vec2<double> orthoProject(vec3<double> pointPos);
+    std::vector<vec3d> getVertices();
+    static void normalizeVertices(std::vector<vec3d> &in, int maxX, int maxY, int maxZ);
+    std::vector<vec3i> getFaces();
+    std::vector<vec<2, vec2d>> getLines();
+    static vec2d projectPoint(vec3d pointPos, vec3d camPos, vec3d pointOrientation, vec3d screenSpacePos);
+    static vec2d projectPoint(vec3d pointPos, vec3d camPos, vec3d screenSpacePos);
+    static vec2d projectPoint(vec3d pointPos);
+    static vec2d orthoProject(vec3d pointPos);
 };
 
