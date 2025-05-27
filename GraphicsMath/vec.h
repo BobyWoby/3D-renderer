@@ -6,7 +6,7 @@
 #include <iostream>
 #include <vector>
 
-namespace {
+namespace gm{
     template<int n, typename T> struct vec{
         T data[n] = {0};
 
@@ -144,15 +144,15 @@ namespace {
     typedef vec<3, int> vec3i;
 
     // MATRICES
-    struct mat {
+    struct Matrix {
         public:
             int rows, cols;
             double **data;
 
-            mat(int rows, int cols):rows(rows), cols(cols){
+            Matrix(int rows, int cols):rows(rows), cols(cols){
                 alloc();
             }
-            mat(double** init, int rows, int cols): rows(rows), cols(cols){
+            Matrix(double** init, int rows, int cols): rows(rows), cols(cols){
                 alloc();
                 for(int i = 0; i < rows; i++){
                     for(int j = 0; j < cols; j++){
@@ -161,8 +161,8 @@ namespace {
                 }
             }
 
-            mat reduce(int excludeX, int excludeY){
-                mat out = mat(this->rows - 1, this->cols -1);
+            Matrix reduce(int excludeX, int excludeY){
+                Matrix out = Matrix(this->rows - 1, this->cols -1);
                 for(int i = 0; i < this->rows; i++){
                     for(int j = 0; j < this->cols; j++){
                         if(i == excludeX || j == excludeY) continue;
@@ -172,13 +172,13 @@ namespace {
                 return out;
             }
 
-            mat inverse(){
+            Matrix inverse(){
                 // inverse = 1 / det(A) * Adj(A)
                 // Adj(A) = transpose(cofactor(A))
                 // cofactor(i, j) = -1^(i + j) * A[i][j] * det(reduce(A))
                 
-                // calculate the cofactor matrix
-                mat out(this->rows, this->cols);
+                // calculate the cofactor Matrix
+                Matrix out(this->rows, this->cols);
                 for(int i = 0; i < this->rows; i++){
                     for(int j = 0; j< this->cols; j++){
                         //calculate the cofactor element
@@ -186,12 +186,12 @@ namespace {
                     }
                 }
 
-                //take the cofactor matrix and transpose it to get the adjoint, then multiply by the recipricoal of the determinant
+                //take the cofactor Matrix and transpose it to get the adjoint, then multiply by the recipricoal of the determinant
                 return  out.transpose() * (1.0 / determinant(*this));
             }
 
-            mat transpose(){
-                mat out(this->cols, this->rows);
+            Matrix transpose(){
+                Matrix out(this->cols, this->rows);
                 for(int i = 0; i < this->rows; i++){
                     for(int j = 0; j < this->cols; j++){
                         out.data[j][i] = this->data[i][j];
@@ -200,14 +200,14 @@ namespace {
                 return out;
             }
 
-            static double determinant(mat in){
+            static double determinant(Matrix in){
                 assert(in.rows >= 2 && in.cols >= 2);
                 if(in.rows != in.cols){
                     std::cerr << "Can't find determinant of a non-square matrix!" << std::endl;
                     return 0;
                 }
                 if(in.rows == 2){
-                    // determinant of a 2x2 matrix is ad - bc
+                    // determinant of a 2x2 Matrix is ad - bc
                     return in.data[0][0] * in.data[1][1] - in.data[0][1] * in.data[1][0];
                 }
                 double sum = 0;
@@ -217,8 +217,9 @@ namespace {
                 return sum;
             }
 
-            mat operator*( double scalar){
-                mat out = mat(rows, cols);
+
+            Matrix operator*( double scalar){
+                Matrix out = Matrix(rows, cols);
                 for(int i = 0; i < rows; i++){
                     for(int j = 0; j < cols; j++){
                         for(int k = 0; k < this->cols; k++){
@@ -228,12 +229,12 @@ namespace {
                 }
                 return out;
             }
-            mat operator*(const mat& other){
+            Matrix operator*(const Matrix& other){
                 if(this->cols != other.rows){
-                    std::cerr << "The two matrices you are trying to multiply have incompatible dimensions";
+                    std::cerr << "The two Matrixrices you are trying to multiply have incompatible dimensions";
                     return *this;
                 }
-                mat out = mat(rows, other.cols);
+                Matrix out = Matrix(rows, other.cols);
                 for(int i = 0; i < this->rows; i++){
                     for(int j = 0; j < other.cols; j++){
                         for(int k = 0; k < this->cols; k++){
@@ -250,24 +251,16 @@ namespace {
                     data[i] = new double[cols];
                 }
             }
-            ~mat(){
+            ~Matrix(){
                 for(int i = 0; i < rows; i++){
                     delete[] data[i];
                 }
                 delete[] data;
             }
     };
-    mat operator*(double scalar, mat A){
-        mat out = mat(A.rows, A.cols);
-        for(int i = 0; i < A.rows; i++){
-            for(int j = 0; j < A.cols; j++){
-                for(int k = 0; k < A.cols; k++){
-                    out.data[i][j] = A.data[i][k] * scalar;
-                }
-            }
-        }
-        return out;
-    }
+
+    // std::ostream& operator<<(std::ostream& COUT, gm::Matrix mat);
+    // gm::Matrix operator*(double scalar, gm::Matrix A);
 }
 
 

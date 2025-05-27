@@ -19,7 +19,7 @@ std::vector<std::string> Model::split(std::string str, std::string delim) {
     // v 0.11526 0.700717 0.0677257
 }
 
-void Model::normalizeVertices(std::vector<vec3d> &in, int maxX, int maxY, int maxZ){
+void Model::normalizeVertices(std::vector<gm::vec3d> &in, int maxX, int maxY, int maxZ){
 
     for(auto &vert : in){
         vert.x = ++(vert.x) * maxX / 2;
@@ -28,17 +28,17 @@ void Model::normalizeVertices(std::vector<vec3d> &in, int maxX, int maxY, int ma
     }
 }
 
-std::vector<vec3d> Model::getVertices() {
+std::vector<gm::vec3d> Model::getVertices() {
     std::ifstream file(filepath);
     std::string line = "";
-    std::vector<vec3d> out;
+    std::vector<gm::vec3d> out;
     std::vector<std::string> splitLine;
     if (file.is_open()) {
         while (std::getline(file, line)) {
             splitLine = split(line, " ");
             if (splitLine.at(0) == "v") {
                 // std::cout << line << std::endl;
-                vec3d points{std::stod(splitLine.at(1)), std::stod(splitLine.at(2)), std::stod(splitLine.at(3))};
+                gm::vec3d points{std::stod(splitLine.at(1)), std::stod(splitLine.at(2)), std::stod(splitLine.at(3))};
                 out.push_back(points);
             }
         }
@@ -47,16 +47,16 @@ std::vector<vec3d> Model::getVertices() {
     return out;
 }
 
-std::vector<vec3i> Model::getFaces(){
+std::vector<gm::vec3i> Model::getFaces(){
     std::ifstream file(filepath);
-    std::vector<vec3i> faces;
+    std::vector<gm::vec3i> faces;
     std::string line = "";
     std::vector<std::string> splitLine;
     if (file.is_open()) {
         while (std::getline(file, line)) {
             splitLine = split(line, " ");
             if (splitLine.at(0) == "f") {
-                vec3i vertices{std::stoi(split(splitLine.at(1), "/").at(0)), std::stoi(split(splitLine.at(2), "/").at(0)), std::stoi(split(splitLine.at(3), "/").at(0))};
+                gm::vec3i vertices{std::stoi(split(splitLine.at(1), "/").at(0)), std::stoi(split(splitLine.at(2), "/").at(0)), std::stoi(split(splitLine.at(3), "/").at(0))};
                 faces.push_back(vertices);
             }
         }
@@ -66,7 +66,7 @@ std::vector<vec3i> Model::getFaces(){
     return faces; 
 }
 
-vec2d Model::projectPoint(vec3d pointPos, vec3d camPos, vec3d pointOrientation, vec3d screenSpacePos){
+gm::vec2d Model::projectPoint(gm::vec3d pointPos, gm::vec3d camPos, gm::vec3d pointOrientation, gm::vec3d screenSpacePos){
     int x = pointPos.x - camPos.x;
     int y = pointPos.y - camPos.y;
     int z = pointPos.z - camPos.z;
@@ -81,9 +81,9 @@ vec2d Model::projectPoint(vec3d pointPos, vec3d camPos, vec3d pointOrientation, 
     double bx = screenSpacePos.z / dz * dx + screenSpacePos.x;
     double by = screenSpacePos.z / dz * dy + screenSpacePos.y;
 
-    return vec2d(bx, by);    
+    return gm::vec2d(bx, by);    
 }
-vec2d Model::projectPoint(vec3d pointPos, vec3d camPos, vec3d screenSpacePos){
+gm::vec2d Model::projectPoint(gm::vec3d pointPos, gm::vec3d camPos, gm::vec3d screenSpacePos){
     double dx = pointPos.x - camPos.x;
     double dy = pointPos.y - camPos.y;
     double dz = pointPos.z - camPos.z;
@@ -91,37 +91,37 @@ vec2d Model::projectPoint(vec3d pointPos, vec3d camPos, vec3d screenSpacePos){
     double bx = screenSpacePos.z / dz * dx + screenSpacePos.x;
     double by = screenSpacePos.z / dz * dy + screenSpacePos.y;
     
-    return vec2d(bx, by);
+    return gm::vec2d(bx, by);
 }
-vec2d Model::projectPoint(vec3d pointPos){
-    return projectPoint(pointPos, vec3d(0,0,0), vec3d(0,0,1));
-}
-
-vec2d Model::orthoProject(vec3d pointPos){
-    return vec2d(pointPos.x, pointPos.y);
+gm::vec2d Model::projectPoint(gm::vec3d pointPos){
+    return projectPoint(pointPos, gm::vec3d(0,0,0), gm::vec3d(0,0,1));
 }
 
+gm::vec2d Model::orthoProject(gm::vec3d pointPos){
+    return gm::vec2d(pointPos.x, pointPos.y);
+}
 
-std::vector<vec<2, vec2d>> Model::getLines(){
-    std::vector<vec<2, vec2d>> points;
-    std::vector<vec3d> vertices = getVertices();
+
+std::vector<gm::vec<2, gm::vec2d>> Model::getLines(){
+    std::vector<gm::vec<2, gm::vec2d>> points;
+    std::vector<gm::vec3d> vertices = getVertices();
     normalizeVertices(vertices, 640, 640, 4);
-    std::vector<vec3i> faces = getFaces();
+    std::vector<gm::vec3i> faces = getFaces();
 
     for(auto face : faces){
         // TODO: FIX THIS PERSPECTIVE PROJECTION SOMETIME
         // for(int i = 0; i < 3; i++){
         //     int index1 = face[i] - 1, index2 = face[(i+1)>=3?1:i+1] - 1;
-        //     vec<2, vec2d> line = vec<2, vec2d>(ObjParser::projectPoint(vertices.at(index1)), ObjParser::projectPoint(vertices.at(index2)));
+        //     gm::vec<2, gm::vec2d> line = gm::vec<2, gm::vec2d>(ObjParser::projectPoint(vertices.at(index1)), ObjParser::projectPoint(vertices.at(index2)));
         //     std::cout << "ax: " << line[0].x << ", ay: " << line[0].y << ", bx: " << line[1].x << ", by: " << line[1].y << std::endl;
         //     points.push_back(line);
         // }
 
         for(int i = 0; i < 3; i++){
             int index1 = face[i] - 1, index2 = face[(i+1)>=3?1:i+1] - 1;
-            vec2d v1 = vec2d(vertices.at(index1).x, vertices.at(index1).y);
-            vec2d v2 = vec2d(vertices.at(index2).x, vertices.at(index2).y);
-            vec<2, vec2d> line = vec<2, vec2d>(v1, v2); 
+            gm::vec2d v1 = gm::vec2d(vertices.at(index1).x, vertices.at(index1).y);
+            gm::vec2d v2 = gm::vec2d(vertices.at(index2).x, vertices.at(index2).y);
+            gm::vec<2, gm::vec2d> line = gm::vec<2, gm::vec2d>(v1, v2); 
             std::cout << "ax: " << line[0].x << ", ay: " << line[0].y << ", bx: " << line[1].x << ", by: " << line[1].y << std::endl;
             points.push_back(line);
         }

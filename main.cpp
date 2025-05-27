@@ -1,3 +1,4 @@
+#include "GraphicsMath/vec.h"
 #include "graphics.h"
 #include <cstdlib>
 
@@ -6,23 +7,47 @@ constexpr TGAColor green = {0, 255, 0, 255};
 constexpr TGAColor red = {0, 0, 255, 255};
 constexpr TGAColor blue = {255, 128, 64, 255};
 constexpr TGAColor yellow = {0, 200, 255, 255};
+
+std::ostream& operator<<(std::ostream& COUT, gm::Matrix mat){
+
+    for(int i = 0; i < mat.rows; i++){
+        for(int j = 0; j < mat.cols; j++){
+            COUT << mat.data[i][j] << " ";
+        }
+        COUT << std::endl;
+    }
+    return COUT;
+}
+
+
+
 int main(int argc, char **argv) {
     constexpr int width = 128;
     constexpr int height = 128;
-
+    // double **init = new double *[2];
+    // for(int i = 0; i <2; i++){
+    //     init[i] = new double[3];
+    //     init[i][0] = i + 1;
+    //     init[i][1] = i + 2;
+    //     init[i][2] = i + 3;
+    // }
+    // 
+    // 
+    // gm::Matrix mat = gm::Matrix(init, 2, 3);
+    // std::cout << mat << std::endl;
     TGAImage framebuffer(width, height, TGAImage::RGB);
     TGAImage diablo(640, 640, TGAImage::RGB);
     TGAImage zbuf(640, 640, TGAImage::GRAYSCALE);
 
     Model parser{};
 
-    std::vector<vec3d> vertices = parser.getVertices();
+    std::vector<gm::vec3d> vertices = parser.getVertices();
     Model::normalizeVertices(vertices, 640, 640, 255);
 
     for (auto face : parser.getFaces()) {
-        vec3d a = vertices.at(face[0] - 1);
-        vec3d b = vertices.at(face[1] - 1);
-        vec3d c = vertices.at(face[2] - 1);
+        gm::vec3d a = vertices.at(face[0] - 1);
+        gm::vec3d b = vertices.at(face[1] - 1);
+        gm::vec3d c = vertices.at(face[2] - 1);
 
         TGAColor rnd;
         for (int i = 0; i < 3; i++)

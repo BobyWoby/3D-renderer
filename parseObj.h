@@ -24,13 +24,13 @@ public:
        filepath = f; 
     }    
 
-    std::vector<vec3d> getVertices();
-    static void normalizeVertices(std::vector<vec3d> &in, int maxX, int maxY, int maxZ);
-    std::vector<vec3i> getFaces();
-    std::vector<vec<2, vec2d>> getLines();
-    static vec2d projectPoint(vec3d pointPos, vec3d camPos, vec3d pointOrientation, vec3d screenSpacePos);
-    static vec2d projectPoint(vec3d pointPos, vec3d camPos, vec3d screenSpacePos);
-    static vec2d projectPoint(vec3d pointPos);
-    static vec2d orthoProject(vec3d pointPos);
+    std::vector<gm::vec3d> getVertices();
+    static void normalizeVertices(std::vector<gm::vec3d> &in, int maxX, int maxY, int maxZ);
+    std::vector<gm::vec3i> getFaces();
+    std::vector<gm::vec<2, gm::vec2d>> getLines();
+    static gm::vec2d projectPoint(gm::vec3d pointPos, gm::vec3d camPos, gm::vec3d pointOrientation, gm::vec3d screenSpacePos);
+    static gm::vec2d projectPoint(gm::vec3d pointPos, gm::vec3d camPos, gm::vec3d screenSpacePos);
+    static gm::vec2d projectPoint(gm::vec3d pointPos);
+    static gm::vec2d orthoProject(gm::vec3d pointPos);
 };
 

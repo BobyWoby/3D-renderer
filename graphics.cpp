@@ -58,8 +58,6 @@ void draw::triangle(int ax, int ay, int az, int bx, int by, int bz, int cx,
     }
   }
 }
-void draw::triangle(vec3d a, vec3d b, vec3d c,
-                    TGAImage &framebuffer, TGAImage &zbuffer, TGAColor color) {
-  draw::triangle(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z, framebuffer,
-                 zbuffer, color);
+void draw::triangle(gm::vec3d a, gm::vec3d b, gm::vec3d c, TGAImage &framebuffer, TGAImage &zbuffer, TGAColor color) {
+  draw::triangle(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z, framebuffer, zbuffer, color);
 }
