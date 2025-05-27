@@ -21,9 +21,12 @@ endif()
 
 find_package(OpenMP COMPONENTS CXX)
 
+add_subdirectory(GraphicsMath)
 set(SOURCES main.cpp tgaimage.cpp parseObj.cpp graphics.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 target_link_libraries(${PROJECT_NAME} PRIVATE $<$<BOOL:${OpenMP_CXX_FOUND}>:OpenMP::OpenMP_CXX>)
+target_include_directories(tinyrenderer PUBLIC "${PROJECT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}/GraphicsMath")
 
+target_link_libraries(tinyrenderer PUBLIC GraphicsMath)
 file(GENERATE OUTPUT .gitignore CONTENT "*")
