@@ -31,30 +31,40 @@ int main(int argc, char **argv) {
     //     init[i][1] = i + 2;
     //     init[i][2] = i + 3;
     // }
-    // 
-    // 
-    // gm::Matrix mat = gm::Matrix(init, 2, 3);
-    // std::cout << mat << std::endl;
-    TGAImage framebuffer(width, height, TGAImage::RGB);
-    TGAImage diablo(640, 640, TGAImage::RGB);
-    TGAImage zbuf(640, 640, TGAImage::GRAYSCALE);
 
-    Model parser{};
 
-    std::vector<gm::vec3d> vertices = parser.getVertices();
-    Model::normalizeVertices(vertices, 640, 640, 255);
-
-    for (auto face : parser.getFaces()) {
-        gm::vec3d a = vertices.at(face[0] - 1);
-        gm::vec3d b = vertices.at(face[1] - 1);
-        gm::vec3d c = vertices.at(face[2] - 1);
-
-        TGAColor rnd;
-        for (int i = 0; i < 3; i++)
-            rnd[i] = std::rand() % 255;
-        draw::triangle(vertices.at(face[0] - 1), vertices.at(face[1] - 1), vertices.at(face[2] - 1), diablo, zbuf, rnd);
+    gm::Matrix mat = gm::Matrix(2, 3);
+    for(int i = 0; i < 2; i++){
+        for (int j = 0; j < 3; j++) {
+            mat.data[i][j] = i * 3 + j;
+        }
     }
-    zbuf.write_tga_file("zbuffer.tga");
-    diablo.write_tga_file("framebuffer.tga");
+
+
+    std::cout << (std::string)mat << std::endl;
+    // Commented this out to test matrix stuff
+    // --------------------------------------
+    // TGAImage framebuffer(width, height, TGAImage::RGB);
+    // TGAImage diablo(640, 640, TGAImage::RGB);
+    // TGAImage zbuf(640, 640, TGAImage::GRAYSCALE);
+    // Model parser{};
+    // std::vector<gm::vec3d> vertices = parser.getVertices();
+    // Model::normalizeVertices(vertices, 640, 640, 255);
+    //
+    // for (auto face : parser.getFaces()) {
+    //     gm::vec3d a = vertices.at(face[0] - 1);
+    //     gm::vec3d b = vertices.at(face[1] - 1);
+    //     gm::vec3d c = vertices.at(face[2] - 1);
+    //
+    //     TGAColor rnd;
+    //     for (int i = 0; i < 3; i++)
+    //         rnd[i] = std::rand() % 255;
+    //     draw::triangle(vertices.at(face[0] - 1), vertices.at(face[1] - 1), vertices.at(face[2] - 1), diablo, zbuf, rnd);
+    // }
+    // zbuf.write_tga_file("zbuffer.tga");
+    // diablo.write_tga_file("framebuffer.tga");
+
+
+
     return 0;
 }

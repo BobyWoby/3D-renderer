@@ -2,6 +2,7 @@
 #include <cassert>
 #include <cmath>
 #include <cstddef>
+#include <string>
 #include <utility>
 #include <iostream>
 #include <vector>
@@ -161,6 +162,17 @@ namespace gm{
                 }
             }
 
+            operator std::string() const{
+                std::string out = "";
+                for(int i = 0; i < rows; i++){
+                    for(int j = 0; j < cols; j++){
+                        out += std::to_string(data[i][j]) + " ";
+                    }
+                    out += '\n';
+                }
+                return out;
+            }
+
             Matrix reduce(int excludeX, int excludeY){
                 Matrix out = Matrix(this->rows - 1, this->cols -1);
                 for(int i = 0; i < this->rows; i++){
@@ -247,20 +259,20 @@ namespace gm{
 
             void alloc(){
                 data = new double*[rows];
-                for(int i = 0; i < rows; i++){
+                for(int i = 0; i < rows; ++i){
                     data[i] = new double[cols];
                 }
             }
             ~Matrix(){
                 for(int i = 0; i < rows; i++){
-                    delete[] data[i];
+                    delete data[i];
                 }
+                std::cout << "fish" << std::endl;
                 delete[] data;
+                std::cout << "cake" << std::endl;
             }
+            
     };
-
-    // std::ostream& operator<<(std::ostream& COUT, gm::Matrix mat);
-    // gm::Matrix operator*(double scalar, gm::Matrix A);
 }
 
 
