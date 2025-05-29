@@ -178,7 +178,9 @@ namespace gm{
                 for(int i = 0; i < this->rows; i++){
                     for(int j = 0; j < this->cols; j++){
                         if(i == excludeX || j == excludeY) continue;
-                        out.data[i][j] = this->data[i][j];
+                        int iIndex = (i > excludeX)? i-1:i;
+                        int jIndex = (j > excludeY)? j-1:j;
+                        out.data[iIndex][jIndex] = this->data[i][j];
                     }
                 }
                 return out;
@@ -188,6 +190,12 @@ namespace gm{
                 // inverse = 1 / det(A) * Adj(A)
                 // Adj(A) = transpose(cofactor(A))
                 // cofactor(i, j) = -1^(i + j) * A[i][j] * det(reduce(A))
+
+                if(rows != cols){
+                    std::cerr << "Can't find inverse of a non-square matrix!" << std::endl;
+                }
+                assert(rows == cols);
+
                 
                 // calculate the cofactor Matrix
                 Matrix out(this->rows, this->cols);
@@ -197,9 +205,12 @@ namespace gm{
                         out.data[i][j] = std::pow(-1, i+j) * this->data[i][j] * determinant(this->reduce(i,j));
                     }
                 }
+                double det = determinant(*this);
 
+                if(det == 0) std::cerr << "Can't find the inverse of a singular matrix!" << std::endl;
+                assert(det != 0);
                 //take the cofactor Matrix and transpose it to get the adjoint, then multiply by the recipricoal of the determinant
-                return  out.transpose() * (1.0 / determinant(*this));
+                return  out.transpose() * (1.0 / det);
             }
 
             Matrix transpose(){
@@ -213,18 +224,25 @@ namespace gm{
             }
 
             static double determinant(Matrix in){
-                assert(in.rows >= 2 && in.cols >= 2);
                 if(in.rows != in.cols){
                     std::cerr << "Can't find determinant of a non-square matrix!" << std::endl;
                     return 0;
                 }
+                assert(in.rows >= 2 && in.cols >= 2);
+                assert(in.rows == in.cols);
                 if(in.rows == 2){
                     // determinant of a 2x2 Matrix is ad - bc
                     return in.data[0][0] * in.data[1][1] - in.data[0][1] * in.data[1][0];
                 }
                 double sum = 0;
                 for(int i = 0; i < in.cols; i++){
-                    sum += in.data[0][i] * std::pow(-1, i) * determinant(in.reduce(0, i));
+                    // Expand along the 1st row
+                    std::cout << std::endl << i << " col: " << in.data[0][i] << std::endl;
+                    std::cout << "-------------" << in.data[0][i] << std::endl;
+                    std::cout << "std::pow(-1, " << i << "): " << std::pow(-1, i) << std::endl;
+                    std::cout << "gm::Matrix::determinant(in.reduce(0, " << i << ")): " << gm::Matrix::determinant(in.reduce(0, i)) << std::endl;
+
+                    sum += in.data[0][i] * std::pow(-1, i) * gm::Matrix::determinant(in.reduce(0, i));
                 }
                 return sum;
             }
@@ -243,7 +261,7 @@ namespace gm{
             }
             Matrix operator*(const Matrix& other){
                 if(this->cols != other.rows){
-                    std::cerr << "The two Matrixrices you are trying to multiply have incompatible dimensions";
+                    std::cerr << "The two matrices you are trying to multiply have incompatible dimensions";
                     return *this;
                 }
                 Matrix out = Matrix(rows, other.cols);
@@ -264,12 +282,10 @@ namespace gm{
                 }
             }
             ~Matrix(){
-                for(int i = 0; i < rows; i++){
-                    delete data[i];
-                }
-                std::cout << "fish" << std::endl;
-                delete[] data;
-                std::cout << "cake" << std::endl;
+                // for(int i = 0; i < rows; i++){
+                //     delete[] data[i]; // there's a segfault here for some reason idk y
+                // }
+                // delete[] data; // also an invalid read here according to valgrind 
             }
             
     };

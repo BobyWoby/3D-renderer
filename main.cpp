@@ -1,6 +1,7 @@
 #include "GraphicsMath/vec.h"
 #include "graphics.h"
 #include <cstdlib>
+#include <string>
 
 constexpr TGAColor white = {255, 255, 255, 255}; // attention, BGRA order
 constexpr TGAColor green = {0, 255, 0, 255};
@@ -24,26 +25,26 @@ std::ostream& operator<<(std::ostream& COUT, gm::Matrix mat){
 int main(int argc, char **argv) {
     constexpr int width = 128;
     constexpr int height = 128;
-    // double **init = new double *[2];
-    // for(int i = 0; i <2; i++){
-    //     init[i] = new double[3];
-    //     init[i][0] = i + 1;
-    //     init[i][1] = i + 2;
-    //     init[i][2] = i + 3;
-    // }
 
-
-    gm::Matrix mat = gm::Matrix(2, 3);
-    for(int i = 0; i < 2; i++){
+    gm::Matrix mat = gm::Matrix(3, 3);
+    for(int i = 0; i < 3; i++){
         for (int j = 0; j < 3; j++) {
-            mat.data[i][j] = i * 3 + j;
+            mat.data[i][j] = i * 4 + j;
         }
     }
 
-
     std::cout << (std::string)mat << std::endl;
+
+    std::cout << (std::string)(mat.reduce(0, 0)) << std::endl;
+    // std::cout << gm::Matrix::determinant(mat.reduce(0, 0)) << std::endl;
+    std::cout << gm::Matrix::determinant(mat) << std::endl;
+    // std::cout << (gm::Matrix::determinant(mat)) << std::endl;
+    // std::cout << (std::string)(mat.inverse()) << std::endl;
+
+
     // Commented this out to test matrix stuff
     // --------------------------------------
+
     // TGAImage framebuffer(width, height, TGAImage::RGB);
     // TGAImage diablo(640, 640, TGAImage::RGB);
     // TGAImage zbuf(640, 640, TGAImage::GRAYSCALE);
