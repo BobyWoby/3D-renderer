@@ -161,6 +161,17 @@ namespace gm{
                     }
                 }
             }
+            Matrix(const Matrix& other): Matrix(other.data, other.rows, other.cols){} // copy constructor
+            Matrix(Matrix&& other) noexcept: data(std::exchange(other.data, nullptr)), rows(other.rows), cols(other.cols){}
+            Matrix& operator=(const Matrix& other) noexcept {
+                return *this = Matrix(other);
+            }
+            Matrix& operator=(Matrix&& other) noexcept{
+                std::swap(this->data, other.data);
+                rows = other.rows;
+                cols = other.cols;
+                return *this;
+            }
 
             operator std::string() const{
                 std::string out = "";
@@ -277,15 +288,16 @@ namespace gm{
 
             void alloc(){
                 data = new double*[rows];
-                for(int i = 0; i < rows; ++i){
+                for(int i = 0; i < rows; i++){
                     data[i] = new double[cols];
                 }
             }
             ~Matrix(){
-                // for(int i = 0; i < rows; i++){
-                //     delete[] data[i]; // there's a segfault here for some reason idk y
-                // }
-                // delete[] data; // also an invalid read here according to valgrind 
+                if(data == nullptr || data[0] == nullptr) return;
+                for(int i = 0; i < rows; i++){
+                    delete[] data[i]; // there's a segfault here for some reason idk y
+                }
+                delete[] data; // also an invalid read here according to valgrind 
             }
             
     };

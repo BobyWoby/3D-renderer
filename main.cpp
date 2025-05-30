@@ -26,19 +26,20 @@ int main(int argc, char **argv) {
     constexpr int width = 128;
     constexpr int height = 128;
 
+    int a = 3, b = 5, c;
     gm::Matrix mat = gm::Matrix(3, 3);
+    double init[3][3] = {{1,3,4}, {1,4,2}, {5,6,2}};
     for(int i = 0; i < 3; i++){
         for (int j = 0; j < 3; j++) {
-            mat.data[i][j] = i * 4 + j;
+            // mat.data[i][j] = i * 3 + j + 1;
+            mat.data[i][j] = init[i][j];
         }
     }
-
     std::cout << (std::string)mat << std::endl;
 
     std::cout << (std::string)(mat.reduce(0, 0)) << std::endl;
     // std::cout << gm::Matrix::determinant(mat.reduce(0, 0)) << std::endl;
     std::cout << gm::Matrix::determinant(mat) << std::endl;
-    // std::cout << (gm::Matrix::determinant(mat)) << std::endl;
     // std::cout << (std::string)(mat.inverse()) << std::endl;
 
 
