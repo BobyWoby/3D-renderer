@@ -35,12 +35,12 @@ int main(int argc, char **argv) {
             mat.data[i][j] = init[i][j];
         }
     }
-    std::cout << (std::string)mat << std::endl;
+    std::cout << "Test Matrix:\n" << (std::string)mat << std::endl;
 
-    std::cout << (std::string)(mat.reduce(0, 0)) << std::endl;
     // std::cout << gm::Matrix::determinant(mat.reduce(0, 0)) << std::endl;
-    std::cout << gm::Matrix::determinant(mat) << std::endl;
-    // std::cout << (std::string)(mat.inverse()) << std::endl;
+    std::cout << "determinant: " << gm::Matrix::determinant(mat) << std::endl;
+    std::cout << "inverse:\n " << (std::string)(mat.inverse()) << std::endl;
+    std::cout << "test\n" << (std::string)(mat.inverse() * mat) << std::endl;
 
 
     // Commented this out to test matrix stuff
