@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
     // std::cout << gm::Matrix::determinant(mat.reduce(0, 0)) << std::endl;
     std::cout << "determinant: " << gm::Matrix::determinant(mat) << std::endl;
     std::cout << "inverse:\n " << (std::string)(mat.inverse()) << std::endl;
-    std::cout << "test\n" << (std::string)(mat.inverse() * mat) << std::endl;
+    std::cout << "test\n" << (std::string)(mat * mat.inverse()) << std::endl;
 
 
     // Commented this out to test matrix stuff

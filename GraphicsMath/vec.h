@@ -215,8 +215,6 @@ public:
 
     double det = determinant(*this);
 
-    std::cout << "det" << det << std::endl;
-
     if (det == 0) std::cerr << "Can't find the inverse of a singular matrix!" << std::endl;
     assert(det != 0);
 
@@ -231,7 +229,7 @@ public:
         out.data[i][j] = cofactor;
       }
     }
-    std::cout << "cofactor: \n" << std::string(out) << std::endl;
+    // std::cout << "cofactor: \n" << std::string(out) << std::endl;
     // take the cofactor Matrix and transpose it to get the adjoint, then
     // multiply by the recipricoal of the determinant
 
@@ -285,20 +283,23 @@ public:
     return out;
   }
   Matrix operator*(const Matrix &other) {
-    if (this->cols != other.rows) {
-      std::cerr << "The two matrices you are trying to multiply have "
-                   "incompatible dimensions";
-      return *this;
-    }
-    Matrix out = Matrix(rows, other.cols);
-    for (int i = 0; i < this->rows; i++) {
-      for (int j = 0; j < other.cols; j++) {
-        for (int k = 0; k < this->cols; k++) {
-          out.data[i][j] = this->data[i][k] * other.data[k][j];
-        }
+      if (this->cols != other.rows) {
+          std::cerr << "The two matrices you are trying to multiply have "
+              "incompatible dimensions";
+          return *this;
       }
-    }
-    return out;
+      Matrix out = Matrix(rows, other.cols);
+      double sum = 0;
+      for (int i = 0; i < this->rows; i++) {
+          for (int j = 0; j < other.cols; j++) {
+              sum = 0;
+              for (int k = 0; k < this->cols; k++) {
+                  sum += this->data[i][k] * other.data[k][j];
+              }
+              out.data[i][j] = sum;
+          }
+      }
+      return out;
   }
 
   void alloc() {
