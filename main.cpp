@@ -35,37 +35,45 @@ int main(int argc, char **argv) {
             mat.data[i][j] = init[i][j];
         }
     }
-    std::cout << "Test Matrix:\n" << (std::string)mat << std::endl;
+    // std::cout << "Test Matrix:\n" << (std::string)mat << std::endl;
+    //
+    // // std::cout << gm::Matrix::determinant(mat.reduce(0, 0)) << std::endl;
+    // std::cout << "determinant: " << gm::Matrix::determinant(mat) << std::endl;
+    // std::cout << "inverse:\n " << (std::string)(mat.inverse()) << std::endl;
+    // std::cout << "test\n" << (std::string)(mat * mat.inverse()) << std::endl;
+    //
 
-    // std::cout << gm::Matrix::determinant(mat.reduce(0, 0)) << std::endl;
-    std::cout << "determinant: " << gm::Matrix::determinant(mat) << std::endl;
-    std::cout << "inverse:\n " << (std::string)(mat.inverse()) << std::endl;
-    std::cout << "test\n" << (std::string)(mat * mat.inverse()) << std::endl;
+    // Test the rotation matrix
+    // gm::vec3d testVec = gm::vec3d(1, 0, 0);
+    // std::cout << "vec: " << (std::string)testVec << std::endl;
+    // std::cout << "rotated: " << (std::string)draw::rot(testVec, gm::vec3d(0, 0, M_PI / 2)) << std::endl;
 
-
-    // Commented this out to test matrix stuff
-    // --------------------------------------
-
-    // TGAImage framebuffer(width, height, TGAImage::RGB);
-    // TGAImage diablo(640, 640, TGAImage::RGB);
+    TGAImage framebuffer(width, height, TGAImage::RGB);
+    TGAImage diablo(640, 640, TGAImage::RGB);
+    std::vector<double> zbuf(width*height, -std::numeric_limits<double>::max());
     // TGAImage zbuf(640, 640, TGAImage::GRAYSCALE);
-    // Model parser{};
-    // std::vector<gm::vec3d> vertices = parser.getVertices();
+    // Model parser{"/home/bobywoby/dev/c++/tinyrenderer/obj/african_head/african_head.obj"};
+    Model parser{};
+    std::vector<gm::vec3d> vertices = parser.getVertices();
     // Model::normalizeVertices(vertices, 640, 640, 255);
-    //
-    // for (auto face : parser.getFaces()) {
-    //     gm::vec3d a = vertices.at(face[0] - 1);
-    //     gm::vec3d b = vertices.at(face[1] - 1);
-    //     gm::vec3d c = vertices.at(face[2] - 1);
-    //
-    //     TGAColor rnd;
-    //     for (int i = 0; i < 3; i++)
-    //         rnd[i] = std::rand() % 255;
-    //     draw::triangle(vertices.at(face[0] - 1), vertices.at(face[1] - 1), vertices.at(face[2] - 1), diablo, zbuf, rnd);
-    // }
-    // zbuf.write_tga_file("zbuffer.tga");
-    // diablo.write_tga_file("framebuffer.tga");
 
+    gm::vec3d rotation = gm::vec3d(0 , M_PI / 6, 0);
+    for (auto face : parser.getFaces()) {
+        gm::vec3d a = Model::projectPoint(draw::rot(vertices.at(face[0] - 1), rotation), 3.) + gm::vec3d(0, 0, -0.4);
+        gm::vec3d b = Model::projectPoint(draw::rot(vertices.at(face[1] - 1), rotation), 3.) + gm::vec3d(0, 0, -0.4);
+        gm::vec3d c = Model::projectPoint(draw::rot(vertices.at(face[2] - 1), rotation), 3.) + gm::vec3d(0, 0, -0.4);
+
+        Model::normalizeVertex(a, 640, 640, 255);
+        Model::normalizeVertex(b, 640, 640, 255);
+        Model::normalizeVertex(c, 640, 640, 255);
+
+        TGAColor rnd;
+        for (int i = 0; i < 3; i++)
+            rnd[i] = std::rand() % 255;
+        draw::triangle(a, b, c, diablo, zbuf, rnd);
+    }
+    // zbuf.write_tga_file("zbuffer.tga");
+    diablo.write_tga_file("framebuffer.tga");
 
 
     return 0;

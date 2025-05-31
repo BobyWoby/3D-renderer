@@ -27,6 +27,12 @@ void Model::normalizeVertices(std::vector<gm::vec3d> &in, int maxX, int maxY, in
         vert.z = ++(vert.z) * maxZ / 2;
     }
 }
+void Model::normalizeVertex(gm::vec3d &vert, int maxX, int maxY, int maxZ){
+    vert.x = ++(vert.x) * maxX / 2;
+    vert.y = ++(vert.y) * maxY / 2;
+    vert.z = ++(vert.z) * maxZ / 2;
+    // vert.z = std::max(0.0, std::min(vert.z, (double)maxZ));
+}
 
 std::vector<gm::vec3d> Model::getVertices() {
     std::ifstream file(filepath);
@@ -66,40 +72,17 @@ std::vector<gm::vec3i> Model::getFaces(){
     return faces; 
 }
 
-gm::vec2d Model::projectPoint(gm::vec3d pointPos, gm::vec3d camPos, gm::vec3d pointOrientation, gm::vec3d screenSpacePos){
-    int x = pointPos.x - camPos.x;
-    int y = pointPos.y - camPos.y;
-    int z = pointPos.z - camPos.z;
+gm::vec3d Model::projectPoint(gm::vec3d pointPos, double focalDist){
+    // x' = x / (1 - z /c)
+    // y' = y / (1 - z /c)
+    return pointPos / (1 - pointPos.z / focalDist);
     
-    double dx = std::cos(pointOrientation.y) * (std::sin(pointOrientation.z) * y + std::cos(pointOrientation.z) * x) - z * std::sin(pointOrientation.y);
-    double dy = std::sin(pointOrientation.x) * (std::cos(pointOrientation.y) * z + std::sin(pointOrientation.y * (std::sin(pointOrientation.z) * y + std::cos(pointOrientation.z) * x))) +
-        std::cos(pointOrientation.x) * (std::cos(pointOrientation.z) * y - std::sin(pointOrientation.z) * x);
-    double dz = std::cos(pointOrientation.x) * (std::cos(pointOrientation.y) * z + std::sin(pointOrientation.y * (std::sin(pointOrientation.z) * y + std::cos(pointOrientation.z) * x))) - 
-        std::sin(pointOrientation.x) * (std::cos(pointOrientation.z) * y - std::sin(pointOrientation.z) * x);
-
-    
-    double bx = screenSpacePos.z / dz * dx + screenSpacePos.x;
-    double by = screenSpacePos.z / dz * dy + screenSpacePos.y;
-
-    return gm::vec2d(bx, by);    
-}
-gm::vec2d Model::projectPoint(gm::vec3d pointPos, gm::vec3d camPos, gm::vec3d screenSpacePos){
-    double dx = pointPos.x - camPos.x;
-    double dy = pointPos.y - camPos.y;
-    double dz = pointPos.z - camPos.z;
-    
-    double bx = screenSpacePos.z / dz * dx + screenSpacePos.x;
-    double by = screenSpacePos.z / dz * dy + screenSpacePos.y;
-    
-    return gm::vec2d(bx, by);
-}
-gm::vec2d Model::projectPoint(gm::vec3d pointPos){
-    return projectPoint(pointPos, gm::vec3d(0,0,0), gm::vec3d(0,0,1));
 }
 
 gm::vec2d Model::orthoProject(gm::vec3d pointPos){
     return gm::vec2d(pointPos.x, pointPos.y);
 }
+
 
 
 std::vector<gm::vec<2, gm::vec2d>> Model::getLines(){

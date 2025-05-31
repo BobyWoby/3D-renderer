@@ -26,11 +26,10 @@ public:
 
     std::vector<gm::vec3d> getVertices();
     static void normalizeVertices(std::vector<gm::vec3d> &in, int maxX, int maxY, int maxZ);
+    static void normalizeVertex(gm::vec3d &in, int maxX, int maxY, int maxZ);
     std::vector<gm::vec3i> getFaces();
     std::vector<gm::vec<2, gm::vec2d>> getLines();
-    static gm::vec2d projectPoint(gm::vec3d pointPos, gm::vec3d camPos, gm::vec3d pointOrientation, gm::vec3d screenSpacePos);
-    static gm::vec2d projectPoint(gm::vec3d pointPos, gm::vec3d camPos, gm::vec3d screenSpacePos);
-    static gm::vec2d projectPoint(gm::vec3d pointPos);
+    static gm::vec3d projectPoint(gm::vec3d pointPos, double focalDist);
     static gm::vec2d orthoProject(gm::vec3d pointPos);
 };
 
